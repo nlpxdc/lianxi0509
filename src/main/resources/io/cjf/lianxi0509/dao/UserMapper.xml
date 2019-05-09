@@ -19,15 +19,21 @@
     from lx_user
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
+  <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from lx_user
+    where username = #{username,jdbcType=INTEGER}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from lx_user
     where user_id = #{userId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="io.cjf.lianxi0509.po.User">
-    insert into lx_user (user_id, username, encrypted_password, 
+  <insert id="insert" parameterType="io.cjf.lianxi0509.po.User" useGeneratedKeys="true" keyProperty="userId">
+    insert into lx_user (username, encrypted_password,
       email, mobile, gender, 
       avatar_url)
-    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{encryptedPassword,jdbcType=VARCHAR}, 
+    values (#{username,jdbcType=VARCHAR}, #{encryptedPassword,jdbcType=VARCHAR},
       #{email,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, 
       #{avatarUrl,jdbcType=VARCHAR})
   </insert>
