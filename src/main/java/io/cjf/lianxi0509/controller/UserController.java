@@ -3,6 +3,7 @@ package io.cjf.lianxi0509.controller;
 import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.UserMapper;
 import io.cjf.lianxi0509.dto.ChangeSelfPasswordDTO;
+import io.cjf.lianxi0509.dto.ChangeUserPasswordDTO;
 import io.cjf.lianxi0509.dto.UserCreateDTO;
 import io.cjf.lianxi0509.exception.ClientException;
 import io.cjf.lianxi0509.po.User;
@@ -39,7 +40,7 @@ public class UserController {
         User user = new User();
         user.setUsername(username);
         secureRandom = new SecureRandom();
-        byte[] salt = secureRandom.generateSeed(4);
+        byte[] salt = secureRandom.generateSeed(Constant.saltLength);
         String saltStr = DatatypeConverter.printHexBinary(salt);
         String password = userCreateDTO.getPassword();
         String toEncPwd = password + saltStr;
@@ -94,5 +95,22 @@ public class UserController {
         String newStorePwd = String.format("%s%s%s",newEncPwd,Constant.passwordSeperator,saltStr);
         currentUser.setEncryptedPassword(newStorePwd);
         userMapper.updateByPrimaryKey(currentUser);
+    }
+
+    @PostMapping("/changeUserPassword")
+    public void changeUserPassword(@RequestBody ChangeUserPasswordDTO changeUserPasswordDTO){
+        String sessionId = httpSession.getId();
+        User currentUser = (User) httpSession.getAttribute(sessionId);
+        //todo check current user whether is admin
+        byte[] salt = secureRandom.generateSeed(Constant.saltLength);
+        String saltStr = DatatypeConverter.printHexBinary(salt);
+        String newPwd = changeUserPasswordDTO.getNewPwd();
+        String toEncPwd = newPwd+saltStr;
+        String encPwd= DigestUtils.md5DigestAsHex(toEncPwd.getBytes());
+        String toStorePwd = String.format("%s%s%s", encPwd, Constant.passwordSeperator, saltStr);
+        String username = changeUserPasswordDTO.getUsername();
+        User user = userMapper.selectByUsername(username);
+        user.setEncryptedPassword(toStorePwd);
+        userMapper.updateByPrimaryKey(user);
     }
 }
