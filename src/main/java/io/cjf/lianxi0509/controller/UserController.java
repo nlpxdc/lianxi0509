@@ -2,6 +2,7 @@ package io.cjf.lianxi0509.controller;
 
 import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.UserMapper;
+import io.cjf.lianxi0509.dto.ChangeSelfPasswordDTO;
 import io.cjf.lianxi0509.dto.UserCreateDTO;
 import io.cjf.lianxi0509.exception.ClientException;
 import io.cjf.lianxi0509.po.User;
@@ -68,5 +69,30 @@ public class UserController {
         }
         String sessionId = httpSession.getId();
         httpSession.setAttribute(sessionId, user);
+    }
+
+    @PostMapping("/changeSelfPassword")
+    public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO) throws ClientException {
+        String sessionId = httpSession.getId();
+        User currentUser = (User) httpSession.getAttribute(sessionId);
+        if (currentUser == null){
+            throw new ClientException(3,"user doesn't login");
+        }
+        String originPwd = changeSelfPasswordDTO.getOriginPwd();
+        String encryptedPassword = currentUser.getEncryptedPassword();
+        String[] split = encryptedPassword.split("\\$");
+        String encPwdOrigin = split[0];
+        String saltStr = split[1];
+        String toEncPwd = originPwd + saltStr;
+        String encPwd = DigestUtils.md5DigestAsHex(toEncPwd.getBytes());
+        if (!encPwd.equals(encPwdOrigin)){
+            throw new ClientException(4,"origin password is invalid");
+        }
+        String newPwd = changeSelfPasswordDTO.getNewPwd();
+        String newToEncPwd = newPwd + saltStr;
+        String newEncPwd = DigestUtils.md5DigestAsHex(newToEncPwd.getBytes());
+        String newStorePwd = String.format("%s%s%s",newEncPwd,Constant.passwordSeperator,saltStr);
+        currentUser.setEncryptedPassword(newStorePwd);
+        userMapper.updateByPrimaryKey(currentUser);
     }
 }
