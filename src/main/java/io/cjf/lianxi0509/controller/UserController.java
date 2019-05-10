@@ -1,5 +1,6 @@
 package io.cjf.lianxi0509.controller;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.UserMapper;
 import io.cjf.lianxi0509.dto.ChangeSelfPasswordDTO;
@@ -39,15 +40,9 @@ public class UserController {
         }
         User user = new User();
         user.setUsername(username);
-        secureRandom = new SecureRandom();
-        byte[] salt = secureRandom.generateSeed(Constant.saltLength);
-        String saltStr = DatatypeConverter.printHexBinary(salt);
         String password = userCreateDTO.getPassword();
-        String toEncPwd = password + saltStr;
-        String encPwd = DigestUtils.md5DigestAsHex(toEncPwd.getBytes());
-        String passwordSeperator = Constant.passwordSeperator;
-        String pwdToStore = String.format("%s%s%s",encPwd, passwordSeperator, saltStr);
-        user.setEncryptedPassword(pwdToStore);
+        String encPwd = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+        user.setEncryptedPassword(encPwd);
         userMapper.insert(user);
         return user.getUserId();
     }
@@ -59,13 +54,8 @@ public class UserController {
             throw new ClientException(1,"user doesn't exist");
         }
         String encryptedPassword = user.getEncryptedPassword();
-//        String passwordSeperator = Constant.passwordSeperator;
-        String[] encPwdSaltStr = encryptedPassword.split("\\$");
-        String encPwdOrigin = encPwdSaltStr[0];
-        String saltStr = encPwdSaltStr[1];
-        String toEncPwd = password+saltStr;
-        String encPwd = DigestUtils.md5DigestAsHex(toEncPwd.getBytes());
-        if (!encPwd.equals(encPwdOrigin)){
+        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), encryptedPassword);
+        if (!result.verified){
             throw new ClientException(2,"password is incorrect");
         }
         String sessionId = httpSession.getId();
