@@ -41,7 +41,7 @@ public class UserController {
         String password = userCreateDTO.getPassword();
         String toEncPwd = password + saltStr;
         String encPwd = DigestUtils.md5DigestAsHex(toEncPwd.getBytes());
-        String pwdToStore = encPwd + saltStr;
+        String pwdToStore = String.format("%s$%s",encPwd,saltStr);
         user.setEncryptedPassword(pwdToStore);
         userMapper.insert(user);
         return user.getUserId();
