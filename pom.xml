@@ -67,4 +67,19 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <db.url>jdbc:mysql://localhost:3306/lianxi0509</db.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <db.url>jdbc:mysql://33.44.55.66:3306/lianxi0509</db.url>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>

@@ -31,6 +31,8 @@ public class UserController {
     @Autowired
     private HttpSession httpSession;
 
+
+
     @PostMapping("/create")
     public Integer create(@RequestBody UserCreateDTO userCreateDTO) throws ClientException {
         String username = userCreateDTO.getUsername();
