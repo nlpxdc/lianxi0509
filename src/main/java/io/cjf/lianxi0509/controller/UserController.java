@@ -1,6 +1,7 @@
 package io.cjf.lianxi0509.controller;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.github.cage.Cage;
 import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.UserMapper;
 import io.cjf.lianxi0509.dto.AvatarDTO;
@@ -11,6 +12,7 @@ import io.cjf.lianxi0509.exception.ClientException;
 import io.cjf.lianxi0509.po.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/user")
 @EnableAutoConfiguration
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -37,6 +40,9 @@ public class UserController {
 
     @Autowired
     private HttpSession httpSession;
+
+    @Autowired
+    private Cage cage;
 
 
 
@@ -56,8 +62,27 @@ public class UserController {
         return user.getUserId();
     }
 
+    @GetMapping(value = "/getCaptcha", produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] getCaptcha(){
+        byte[] bytes = secureRandom.generateSeed(2);
+        String hexStr = DatatypeConverter.printHexBinary(bytes);
+        String sessionId = httpSession.getId();
+        httpSession.setAttribute(sessionId,hexStr);
+
+        byte[] draw = cage.draw(hexStr);
+
+        return draw;
+    }
+
     @GetMapping("/login")
-    public void login(@RequestParam String username, @RequestParam String password) throws ClientException {
+    public void login(@RequestParam String username, @RequestParam String password, @RequestParam String captcha) throws ClientException {
+
+        String sessionId = httpSession.getId();
+        String captchaOrigin = (String) httpSession.getAttribute(sessionId);
+        if (!captcha.equalsIgnoreCase(captchaOrigin)){
+            throw new ClientException(0,"captcha is invalid");
+        }
+
         User user = userMapper.selectByUsername(username);
         if (user == null){
             throw new ClientException(1,"user doesn't exist");
@@ -67,7 +92,7 @@ public class UserController {
         if (!result.verified){
             throw new ClientException(2,"password is incorrect");
         }
-        String sessionId = httpSession.getId();
+
         httpSession.setAttribute(sessionId, user);
     }
 
