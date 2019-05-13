@@ -62,6 +62,7 @@ public class UserController {
         return user.getUserId();
     }
 
+//    @GetMapping(value = "/getCaptcha", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @GetMapping(value = "/getCaptcha", produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] getCaptcha(){
         byte[] bytes = secureRandom.generateSeed(2);
