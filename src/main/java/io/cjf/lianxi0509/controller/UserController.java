@@ -3,6 +3,7 @@ package io.cjf.lianxi0509.controller;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.UserMapper;
+import io.cjf.lianxi0509.dto.AvatarDTO;
 import io.cjf.lianxi0509.dto.ChangeSelfPasswordDTO;
 import io.cjf.lianxi0509.dto.ChangeUserPasswordDTO;
 import io.cjf.lianxi0509.dto.UserCreateDTO;
@@ -15,7 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -104,5 +110,16 @@ public class UserController {
         User user = userMapper.selectByUsername(username);
         user.setEncryptedPassword(toStorePwd);
         userMapper.updateByPrimaryKey(user);
+    }
+
+    @PostMapping("/uploadAvatar")
+    public String uploadAvatar(@RequestBody AvatarDTO avatarDTO) throws IOException {
+        String imgDataStr = avatarDTO.getImgDataStr();
+        byte[] imgData = Base64.getDecoder().decode(imgDataStr);
+        String uuid = UUID.randomUUID().toString();
+        FileOutputStream out = new FileOutputStream(uuid);
+        out.write(imgData);
+        out.close();
+        return uuid;
     }
 }
