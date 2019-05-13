@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
@@ -121,5 +122,19 @@ public class UserController {
         out.write(imgData);
         out.close();
         return uuid;
+    }
+
+    @PostMapping("/uploadAvatar2")
+    public String uploadAvatar2(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        String uuid = UUID.randomUUID().toString();
+        FileOutputStream out = new FileOutputStream(uuid+".jpg");
+        out.write(multipartFile.getBytes());
+        out.close();
+        return null;
+    }
+
+    @PostMapping("/uploadAvatar3")
+    public String uploadAvatar3(@RequestParam("file") MultipartFile[] multipartFile) throws IOException {
+        return null;
     }
 }
