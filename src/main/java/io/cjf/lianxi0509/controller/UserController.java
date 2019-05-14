@@ -19,6 +19,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 import java.io.FileNotFoundException;
@@ -121,8 +122,10 @@ public class UserController {
     }
 
     @PostMapping("/changeSelfPassword")
-    public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO) throws ClientException {
-        String token = changeSelfPasswordDTO.getToken();
+    public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO, HttpServletRequest request) throws ClientException {
+        String bearToken = request.getHeader("Authorization");
+        String[] s = bearToken.split(" ");
+        String token = s[1];
 
         Algorithm algorithm = Algorithm.HMAC256("cjf");
         JWTVerifier verifier = JWT.require(algorithm)
