@@ -1,13 +1,13 @@
 package io.cjf.lianxi0509.controller;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.alibaba.fastjson.JSON;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.github.cage.Cage;
 import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.UserMapper;
-import io.cjf.lianxi0509.dto.AvatarDTO;
-import io.cjf.lianxi0509.dto.ChangeSelfPasswordDTO;
-import io.cjf.lianxi0509.dto.ChangeUserPasswordDTO;
-import io.cjf.lianxi0509.dto.UserCreateDTO;
+import io.cjf.lianxi0509.dto.*;
 import io.cjf.lianxi0509.exception.ClientException;
 import io.cjf.lianxi0509.po.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
@@ -76,7 +77,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public void login(@RequestParam String username, @RequestParam String password, @RequestParam String captcha) throws ClientException {
+    public String login(@RequestParam String username, @RequestParam String password, @RequestParam String captcha) throws ClientException {
 
         String sessionId = httpSession.getId();
         String captchaOrigin = (String) httpSession.getAttribute(sessionId);
@@ -94,7 +95,27 @@ public class UserController {
             throw new ClientException(2,"password is incorrect");
         }
 
-        httpSession.setAttribute(sessionId, user);
+        UserLoginDTO userLoginDTO = new UserLoginDTO();
+        userLoginDTO.setUserId(user.getUserId());
+        userLoginDTO.setUsername(user.getUsername());
+        userLoginDTO.setMobile(user.getMobile());
+        userLoginDTO.setEmail(user.getEmail());
+
+        String tokenOrigin = JSON.toJSONString(userLoginDTO);
+//        String s = DatatypeConverter.printHexBinary(tokenOrigin.getBytes());
+        Algorithm algorithm = Algorithm.HMAC256("cjf");
+        String token = JWT.create()
+                .withIssuer("tecent")
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(1657815588152L))
+                .withSubject(username)
+                .withClaim("mobile",user.getMobile())
+                .withClaim("email",user.getEmail())
+                .sign(algorithm);
+
+        return token;
+
+//        httpSession.setAttribute(sessionId, user);
     }
 
     @PostMapping("/changeSelfPassword")
