@@ -3,7 +3,9 @@ package io.cjf.lianxi0509.controller;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.cage.Cage;
 import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.UserMapper;
@@ -120,26 +122,29 @@ public class UserController {
 
     @PostMapping("/changeSelfPassword")
     public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO) throws ClientException {
-        String sessionId = httpSession.getId();
-        User currentUser = (User) httpSession.getAttribute(sessionId);
+        String token = changeSelfPasswordDTO.getToken();
+
+        Algorithm algorithm = Algorithm.HMAC256("cjf");
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer("tecent")
+                .build(); //Reusable verifier instance
+        DecodedJWT jwt = verifier.verify(token);
+        String username = jwt.getSubject();
+        User currentUser = userMapper.selectByUsername(username);
+
         if (currentUser == null){
             throw new ClientException(3,"user doesn't login");
         }
-        String originPwd = changeSelfPasswordDTO.getOriginPwd();
+
         String encryptedPassword = currentUser.getEncryptedPassword();
-        String[] split = encryptedPassword.split("\\$");
-        String encPwdOrigin = split[0];
-        String saltStr = split[1];
-        String toEncPwd = originPwd + saltStr;
-        String encPwd = DigestUtils.md5DigestAsHex(toEncPwd.getBytes());
-        if (!encPwd.equals(encPwdOrigin)){
-            throw new ClientException(4,"origin password is invalid");
+        String originPwd = changeSelfPasswordDTO.getOriginPwd();
+        BCrypt.Result result = BCrypt.verifyer().verify(originPwd.toCharArray(), encryptedPassword);
+        if (!result.verified){
+            throw new ClientException(2,"password is incorrect");
         }
         String newPwd = changeSelfPasswordDTO.getNewPwd();
-        String newToEncPwd = newPwd + saltStr;
-        String newEncPwd = DigestUtils.md5DigestAsHex(newToEncPwd.getBytes());
-        String newStorePwd = String.format("%s%s%s",newEncPwd,Constant.passwordSeperator,saltStr);
-        currentUser.setEncryptedPassword(newStorePwd);
+        String encPwd = BCrypt.withDefaults().hashToString(12, newPwd.toCharArray());
+        currentUser.setEncryptedPassword(encPwd);
         userMapper.updateByPrimaryKey(currentUser);
     }
 
