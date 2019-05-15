@@ -24,7 +24,8 @@ public class TokenFilter implements Filter {
 
     private String[] urls = {
             "/user/getCaptcha",
-            "/user/login"
+            "/user/login",
+            "/menu/getTree"
     };
 
     @Override
