@@ -122,18 +122,11 @@ public class UserController {
     }
 
     @PostMapping("/changeSelfPassword")
-    public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO, HttpServletRequest request) throws ClientException {
-        String bearToken = request.getHeader("Authorization");
-        String[] s = bearToken.split(" ");
-        String token = s[1];
+    public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO) throws ClientException {
 
-        Algorithm algorithm = Algorithm.HMAC256("cjf");
-        JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer("tecent")
-                .build(); //Reusable verifier instance
-        DecodedJWT jwt = verifier.verify(token);
-        String username = jwt.getSubject();
-        User currentUser = userMapper.selectByUsername(username);
+
+
+        User currentUser = userMapper.selectByUsername("cjf");
 
         if (currentUser == null){
             throw new ClientException(3,"user doesn't login");
