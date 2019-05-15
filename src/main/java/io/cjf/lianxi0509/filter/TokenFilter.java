@@ -49,6 +49,7 @@ public class TokenFilter implements Filter {
                 .build(); //Reusable verifier instance
         DecodedJWT jwt = verifier.verify(token);
         String username = jwt.getSubject();
+        request.setAttribute("currentUsername",username);
 
         filterChain.doFilter(servletRequest, servletResponse);
     }

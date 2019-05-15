@@ -122,11 +122,11 @@ public class UserController {
     }
 
     @PostMapping("/changeSelfPassword")
-    public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO) throws ClientException {
+    public void changeSelfPassword(@RequestBody ChangeSelfPasswordDTO changeSelfPasswordDTO, @RequestAttribute("currentUsername") String username) throws ClientException {
 
 
 
-        User currentUser = userMapper.selectByUsername("cjf");
+        User currentUser = userMapper.selectByUsername(username);
 
         if (currentUser == null){
             throw new ClientException(3,"user doesn't login");
