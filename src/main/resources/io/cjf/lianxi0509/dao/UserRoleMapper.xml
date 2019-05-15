@@ -33,4 +33,12 @@
       </if>
     </trim>
   </insert>
+
+  <!--custom sql-->
+  <select id="selectRoleIds" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select
+    role_id
+    from lx_user_role
+    where user_id = #{userId,jdbcType=INTEGER}
+  </select>
 </mapper>

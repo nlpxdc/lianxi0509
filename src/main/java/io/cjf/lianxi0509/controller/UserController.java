@@ -114,6 +114,7 @@ public class UserController {
                 .withSubject(username)
                 .withClaim("mobile",user.getMobile())
                 .withClaim("email",user.getEmail())
+                .withClaim("userId", userLoginDTO.getUserId())
                 .sign(algorithm);
 
         return token;

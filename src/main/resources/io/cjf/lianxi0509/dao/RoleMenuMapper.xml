@@ -33,4 +33,14 @@
       </if>
     </trim>
   </insert>
+
+  <!--custom sql-->
+  <select id="selectUrls" resultType="java.lang.String">
+    SELECT distinct url FROM lx_role_menu as rm left join lx_menu as m on rm.menu_id = m.menu_id
+    where role_id in
+    <foreach item="roleId" index="index" collection="roleIds"
+             open="(" separator="," close=")">
+      #{roleId}
+    </foreach>
+  </select>
 </mapper>
