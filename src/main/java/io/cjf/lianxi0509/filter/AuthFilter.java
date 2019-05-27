@@ -7,18 +7,33 @@ import org.springframework.stereotype.Component;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
 @Order(2)
 public class AuthFilter implements Filter {
+
+    private String[] urls = {
+            "/user/getCaptcha",
+            "/user/login",
+            "/menu/getTree"
+    };
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
-        List<String> authUrls = (List<String>)request.getAttribute("authUrls");
         String requestURI = request.getRequestURI();
-        boolean contains = authUrls.contains(requestURI);
-        if (!contains){
+        boolean containsExclude = Arrays.asList(urls).contains(requestURI);
+        if (containsExclude) {
+            filterChain.doFilter(servletRequest,servletResponse);
+            return;
+        }
+
+        List<String> authUrls = (List<String>)request.getAttribute("authUrls");
+
+        boolean containsAuthUrl = authUrls.contains(requestURI);
+        if (!containsAuthUrl){
             return;
         }
         //todo throw excedption
