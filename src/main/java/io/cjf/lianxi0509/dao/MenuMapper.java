@@ -16,12 +16,15 @@ public interface MenuMapper {
 
     Menu selectByPrimaryKey(Integer menuId);
 
-    List<MenuNode> selectChildren(@Param("menuId") Integer menuId);
-
     int updateByPrimaryKeySelective(Menu record);
 
     int updateByPrimaryKey(Menu record);
 
 //    custom
+
+    List<Menu> selectAll();
+
     List<Menu> selectByMenuIds(@Param("menuIds") Set<Integer> menuIds);
+
+    List<MenuNode> selectChildren(@Param("menuId") Integer menuId);
 }
