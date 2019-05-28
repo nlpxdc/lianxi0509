@@ -10,12 +10,23 @@ import java.security.SecureRandom;
 public class BeanConfig {
 
     @Bean
-    public SecureRandom getSecureRandom(){
+    public SecureRandom getSecureRandom() {
         return new SecureRandom();
     }
 
     @Bean
-    public Cage getCage(){
+    public Cage getCage() {
         return new Cage();
     }
+
+//    @Bean
+//    public FilterRegistrationBean<TokenFilter> loggingFilter() {
+//        FilterRegistrationBean<TokenFilter> registrationBean = new FilterRegistrationBean<>();
+//
+//        registrationBean.setFilter(new TokenFilter());
+//        registrationBean.addUrlPatterns("/*");
+//        registrationBean.setOrder(1);
+//
+//        return registrationBean;
+//    }
 }
