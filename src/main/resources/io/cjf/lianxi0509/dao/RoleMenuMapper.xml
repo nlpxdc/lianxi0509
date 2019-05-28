@@ -44,7 +44,7 @@
     </foreach>
   </select>
   <select id="selectMenuIds" resultType="java.lang.Integer">
-    SELECT distinct menu_id FROM lx_role_menu
+    SELECT menu_id FROM lx_role_menu
     where role_id in
     <foreach item="roleId" index="index" collection="roleIds"
              open="(" separator="," close=")">

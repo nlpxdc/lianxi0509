@@ -7,8 +7,7 @@ import io.cjf.lianxi0509.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +19,12 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<Menu> getAll() {
         List<Menu> menus = menuMapper.selectAll();
+        return menus;
+    }
+
+    @Override
+    public List<Menu> getByMenuIds(Collection<Integer> menuIds) {
+        List<Menu> menus = menuMapper.selectByMenuIds(menuIds);
         return menus;
     }
 
@@ -51,5 +56,19 @@ public class MenuServiceImpl implements MenuService {
         }while (tempId != null && tempId != 0);
 
         return menuIds;
+    }
+
+    @Override
+    public Set<Integer> getUsedMenuIds(List<Integer> menuIds) {
+        HashSet<Integer> usedMenuIds = new HashSet<>();
+
+        for (Integer menuId : menuIds) {
+            List<Integer> tempMenuIds = getMenuChain(menuId);
+            for (Integer tempMenuId : tempMenuIds) {
+                usedMenuIds.add(tempMenuId);
+            }
+        }
+
+        return usedMenuIds;
     }
 }

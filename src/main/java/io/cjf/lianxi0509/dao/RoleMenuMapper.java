@@ -1,6 +1,5 @@
 package io.cjf.lianxi0509.dao;
 
-import io.cjf.lianxi0509.po.Menu;
 import io.cjf.lianxi0509.po.RoleMenuKey;
 import org.apache.ibatis.annotations.Param;
 

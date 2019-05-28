@@ -4,6 +4,7 @@ import io.cjf.lianxi0509.dto.MenuNode;
 import io.cjf.lianxi0509.po.Menu;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public interface MenuMapper {
 
     List<Menu> selectAll();
 
-    List<Menu> selectByMenuIds(@Param("menuIds") Set<Integer> menuIds);
+    List<Menu> selectByMenuIds(@Param("menuIds") Collection<Integer> menuIds);
 
     List<MenuNode> selectChildren(@Param("menuId") Integer menuId);
 }

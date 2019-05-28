@@ -1,5 +1,6 @@
 package io.cjf.lianxi0509.filter;
 
+import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.exception.ClientException;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -14,17 +15,11 @@ import java.util.List;
 @Order(2)
 public class AuthFilter implements Filter {
 
-    private String[] urls = {
-            "/user/getCaptcha",
-            "/user/login",
-            "/menu/getTree"
-    };
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         String requestURI = request.getRequestURI();
-        boolean containsExclude = Arrays.asList(urls).contains(requestURI);
+        boolean containsExclude = Arrays.asList(Constant.passUrls).contains(requestURI);
         if (containsExclude) {
             filterChain.doFilter(servletRequest,servletResponse);
             return;

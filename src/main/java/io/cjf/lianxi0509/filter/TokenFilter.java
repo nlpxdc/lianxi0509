@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import io.cjf.lianxi0509.constant.Constant;
 import io.cjf.lianxi0509.dao.RoleMenuMapper;
 import io.cjf.lianxi0509.dao.UserRoleMapper;
 import org.apache.catalina.connector.RequestFacade;
@@ -32,19 +33,13 @@ public class TokenFilter implements Filter {
     @Autowired
     private RoleMenuMapper roleMenuMapper;
 
-    private String[] urls = {
-            "/user/getCaptcha",
-            "/user/login",
-            "/menu/getTree"
-    };
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         logger.info("token filter");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI = request.getRequestURI();
 
-        boolean contains = Arrays.asList(urls).contains(requestURI);
+        boolean contains = Arrays.asList(Constant.passUrls).contains(requestURI);
         if (contains) {
             filterChain.doFilter(servletRequest,servletResponse);
             return;
