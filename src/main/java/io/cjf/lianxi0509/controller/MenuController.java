@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/menu")
@@ -30,7 +31,8 @@ public class MenuController {
     @GetMapping("/getTree")
     public List<MenuNode> getTree(@RequestParam Integer rootMenuId) {
         List<Menu> allMenus = menuService.getAll();
-        List<MenuNode> menuNodes = menuService.getChildren(rootMenuId, allMenus);
+        List<Integer> allMenuIds = allMenus.stream().map(m -> m.getMenuId()).collect(Collectors.toList());
+        List<MenuNode> menuNodes = menuService.getChildren(rootMenuId, allMenus, allMenuIds);
         return menuNodes;
     }
 
@@ -41,7 +43,7 @@ public class MenuController {
         List<Integer> userMenuIds = roleMenuMapper.selectMenuIds(userRoleIds);
         Set<Integer> usedMenuIds = menuService.getUsedMenuIds(userMenuIds);
         List<Menu> userAllMenus = menuService.getByMenuIds(usedMenuIds);
-        List<MenuNode> userMenuNodes = menuService.getChildren(rootMenuId, userAllMenus);
+        List<MenuNode> userMenuNodes = menuService.getChildren(rootMenuId, userAllMenus, userMenuIds);
         return userMenuNodes;
     }
 

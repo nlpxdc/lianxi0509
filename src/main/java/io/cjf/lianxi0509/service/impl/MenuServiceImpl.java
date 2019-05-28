@@ -29,7 +29,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public List<MenuNode> getChildren(Integer rootMenuId, List<Menu> usedMenus) {
+    public List<MenuNode> getChildren(Integer rootMenuId, List<Menu> usedMenus, List<Integer> accessMenuIds) {
         LinkedList<MenuNode> menuNodes = new LinkedList<>();
 
         List<Menu> menus = usedMenus.stream().filter(m -> m.getParentId() == rootMenuId).collect(Collectors.toList());
@@ -38,7 +38,8 @@ public class MenuServiceImpl implements MenuService {
             menuNode.setMenuId(menu.getMenuId());
             menuNode.setName(menu.getName());
             menuNode.setUrl(menu.getUrl());
-            menuNode.setSubMenus(getChildren(menu.getMenuId(), usedMenus));
+            menuNode.setAccessible(accessMenuIds.contains(menu.getMenuId()));
+            menuNode.setSubMenus(getChildren(menu.getMenuId(), usedMenus, accessMenuIds));
             menuNodes.add(menuNode);
         }
         return menuNodes;

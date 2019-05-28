@@ -13,7 +13,7 @@ public interface MenuService {
 
     List<Menu> getByMenuIds(Collection<Integer> menuIds);
 
-    List<MenuNode> getChildren(Integer rootMenuId, List<Menu> usedMenus);
+    List<MenuNode> getChildren(Integer rootMenuId, List<Menu> usedMenus, List<Integer> accessMenuIds);
 
     List<Integer> getMenuChain(Integer childMenuId);
 
