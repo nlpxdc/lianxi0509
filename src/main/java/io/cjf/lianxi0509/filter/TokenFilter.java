@@ -65,6 +65,7 @@ public class TokenFilter implements Filter {
 
         Claim userIdClaim = jwt.getClaim("userId");
         Integer userId = userIdClaim.asInt();
+        request.setAttribute("currentUserId", userId);
 
         List<Integer> roleIds = userRoleMapper.selectRoleIds(userId);
 

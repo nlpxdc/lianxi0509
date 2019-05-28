@@ -5,6 +5,7 @@ import io.cjf.lianxi0509.po.Menu;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface MenuMapper {
     int deleteByPrimaryKey(Integer menuId);
@@ -20,4 +21,7 @@ public interface MenuMapper {
     int updateByPrimaryKeySelective(Menu record);
 
     int updateByPrimaryKey(Menu record);
+
+//    custom
+    List<Menu> selectByMenuIds(@Param("menuIds") Set<Integer> menuIds);
 }

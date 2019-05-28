@@ -12,6 +12,8 @@ public class MenuNode {
 
     private String url;
 
+    private Boolean accessible;
+
     private List<MenuNode> subMenus;
 
     public Integer getMenuId() {
@@ -44,5 +46,13 @@ public class MenuNode {
 
     public void setSubMenus(List<MenuNode> subMenus) {
         this.subMenus = subMenus;
+    }
+
+    public Boolean getAccessible() {
+        return accessible;
+    }
+
+    public void setAccessible(Boolean accessible) {
+        this.accessible = accessible;
     }
 }
