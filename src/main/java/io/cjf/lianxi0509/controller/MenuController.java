@@ -6,6 +6,7 @@ import io.cjf.lianxi0509.dto.MenuNode;
 import io.cjf.lianxi0509.po.Menu;
 import io.cjf.lianxi0509.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ public class MenuController {
     private MenuService menuService;
 
     @GetMapping("/getTree")
+    @Cacheable("MenuTree")
     public List<MenuNode> getTree(@RequestParam Integer rootMenuId) {
         List<Menu> allMenus = menuService.getAll();
         List<Integer> allMenuIds = allMenus.stream().map(m -> m.getMenuId()).collect(Collectors.toList());

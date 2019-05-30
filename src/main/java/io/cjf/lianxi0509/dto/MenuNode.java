@@ -2,10 +2,11 @@ package io.cjf.lianxi0509.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.io.Serializable;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MenuNode {
+public class MenuNode implements Serializable {
     private Integer menuId;
 
     private String name;
